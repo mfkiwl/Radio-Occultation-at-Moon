@@ -33,9 +33,9 @@ for i in range(K):
     else:
         LLA[i]=[-1,-1,-1] 
 #################################################################################################################
-LLA_3d=[] #list containing Lon,Lat and Alt
-LLA_alt=[] #list containing only Altitude
-LLA_minalt=[] #list containing only Minimum Altitude
+LLA_3d=[] 
+LLA_alt=[] 
+LLA_minalt=[] 
 count=0 
 flag=True 
 for num in LLA:
