@@ -31,9 +31,9 @@ for i in range(K):
         LLA[i]=[-1,-1,-1]
 #LLA
 ######################################################################################## Finding Minimum Altitude
-LLA_3d=[] #list containing Lon,Lat and Alt
-LLA_alt=[] #list containing only Altitude
-LLA_minalt=[] #list containing only Minimum Altitude
+LLA_3d=[]
+LLA_alt=[]
+LLA_minalt=[]
 count=0 
 flag=True #Determine if we should end reading data and start to take the minimum value in the list
 for num in LLA:
