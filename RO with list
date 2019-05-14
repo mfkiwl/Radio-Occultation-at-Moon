@@ -1,0 +1,70 @@
+import pandas as pd
+import numpy as np
+df1=pd.read_csv("sata.csv")
+DF1=df1.values.tolist()
+df2=pd.read_csv("satb.csv")
+DF2=df2.values.tolist()
+LLA=[] #List containing Longitude, Latitude and Altitude
+
+for i in range(0,259200):
+    SatA=DF1[i] #for some row in the list
+    SatB=DF2[i]
+    D=np.linalg.norm(np.cross(SatA,SatB))/np.linalg.norm([SatA[0]-SatB[0],SatA[1]-SatB[1],SatA[2]-SatB[2]])
+    #Calculate the shortest distance between line AB and C
+    a=[SatB[0]-SatA[0],SatB[1]-SatA[1],SatB[2]-SatA[2]]
+    t=-(np.dot(SatA,a))/(np.linalg.norm(a))**2 #parametric representation of a line
+    x=SatA[0] + (SatB[0] - SatA[0]) *t #Calculate the point on line AB that has shortest distance to center of moon
+    y=SatA[1] + (SatB[1] - SatA[1]) *t
+    z=SatA[2] + (SatB[2] - SatA[2]) *t
+    if(D<1737): #Distance shorter than radius of moon will be blocked by moon
+        LLA.append([-1,-1,-1])
+    elif(D<1837):#Radio occultation happens when the distance lies between radius of moon and lunar ionosphere
+        if(y>0): #Projecting XYZ cartesian coordinate on moon surface using Mercator projection
+            Lon=np.arccos(x/np.sqrt(x**2+y**2))* 180 /np.pi * 1
+        else:
+            Lon=np.arccos(x/np.sqrt(x**2+y**2))* 180 /np.pi * (-1)
+        Lat = np.arcsin(z/np.sqrt(x**2 + y**2 + z**2)) * 180 /np.pi;
+        A = np.sqrt(x**2 + y**2 + z**2)-1737 #Altitude
+        LLA.append([Lon,Lat,A]) #Save Lon,Lat and A into the list
+    else:
+        LLA.append([-1,-1,-1]) #Signal will not pass through ionosphere, hence no radio occultation
+#LLA
+######################################################################################## Finding Minimum Altitude
+LLA_3d=[] #list containing Lon,Lat and Alt
+LLA_alt=[] #list containing only Altitude
+LLA_minalt=[] #list containing only Minimum Altitude
+count=0 
+flag=True #Determine if we should end reading data and start to take the minimum value in the list
+for num in LLA:
+    if num[2]>=0: #Radio Occultation occurs
+        flag=True
+        count=count+1 
+        LLA_3d.append(num) #save in list if radio occultation occurs
+        LLA_alt.append(num[2])##save in list if radio occultation occurs(only altitude)
+    else:
+        flag=False #-1, no radio occultation
+        
+    if flag is False and count>0: #-1 and count>0=> Ending the section which radio occultation occurs
+        minalt=min(LLA_alt) #finding minimum value of Altitude
+        position=LLA_alt.index(minalt) #finding the index of minimum altitude in the list
+        LLA_minalt.append(LLA_3d[position]) #minimum value will have the same index in list 3d and alt
+        count=0 #reset count when the signal is blocked radio occultation doesn't occur
+        LLA_alt.clear() 
+        LLA_3d.clear() #clear the list to avoid minimum value mixing with minimum in other section
+
+#LLA_minalt
+#################################################################################################### Plot
+import matplotlib.pyplot as plt
+Lon=[]
+Lat=[]
+
+for n in LLA_minalt: 
+    Lon.append(n[0])
+    Lat.append(n[1])
+
+plt.style.use('dark_background')
+plt.plot(Lon,Lat,"c.")  
+plt.title('Radio Occultation Plot')
+
+plt.show()
+print(len(LLA_minalt))
