@@ -1,17 +1,18 @@
 import pandas as pd
 import numpy as np
 df1=pd.read_csv("sata.csv")
-DF1=df1.values.tolist()
+DF1=np.array(df1)
 df2=pd.read_csv("satb.csv")
-DF2=df2.values.tolist()
+DF2=np.array(df2)
 K=259200
 LLA=np.zeros((K,3)) #List containing Longitude, Latitude and Altitude
 
 for i in range(K):
-    SatA=DF1[i] #save the data in list
+    SatA=DF1[i]
     SatB=DF2[i]
     D=np.linalg.norm(np.cross(SatA,SatB))/np.linalg.norm([SatA[0]-SatB[0],SatA[1]-SatB[1],SatA[2]-SatB[2]])
     #Calculate the shortest distance between line AB and C
+        #Calculate the shortest distance between line AB and C
     a=[SatB[0]-SatA[0],SatB[1]-SatA[1],SatB[2]-SatA[2]]
     t=-(np.dot(SatA,a))/(np.linalg.norm(a))**2 #parametric representation of a line
     x=SatA[0] + (SatB[0] - SatA[0]) *t #Calculate the point on line AB that has shortest distance to center of moon
@@ -41,7 +42,7 @@ for num in LLA:
         flag=True
         count=count+1 
         LLA_3d.append(num) #save in list if radio occultation occurs
-        LLA_alt.append(num[2])##save in list if radio occultation occurs(only altitude)
+        LLA_alt.append(num[2])#save in list if radio occultation occurs(only altitude)
     else:
         flag=False #-1, no radio occultation
         
