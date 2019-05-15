@@ -1,15 +1,15 @@
 import pandas as pd
 import numpy as np
-df1=pd.read_csv("sata.csv")
-DF1=np.array(df1)
-df2=pd.read_csv("satb.csv")
-DF2=np.array(df2)
+dfA=pd.read_csv("sata.csv")
+DFA=np.array(dfA)
+dfB=pd.read_csv("satb.csv")
+DFB=np.array(dfB)
 K=259200
 LLA=np.zeros((K,3)) 
 
 for i in range(K):
-    SatA=DF1[i]
-    SatB=DF2[i]
+    SatA=DFA[i]
+    SatB=DFB[i]
     D=np.linalg.norm(np.cross(SatA,SatB))/np.linalg.norm([SatA[0]-SatB[0],SatA[1]-SatB[1],SatA[2]-SatB[2]])
     #Calculate the shortest distance between line AB and C
     a=[SatB[0]-SatA[0],SatB[1]-SatA[1],SatB[2]-SatA[2]]
@@ -66,6 +66,5 @@ for n in LLA_minalt:
 plt.style.use('dark_background')
 plt.plot(Lon,Lat,"c.")  
 plt.title('Radio Occultation Plot')
-
 plt.show()
 print(len(LLA_minalt))
