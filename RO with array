@@ -21,10 +21,10 @@ for i in range(K):
         LLA[i]=[-1,-1,-1]
     elif(D<1837):
         if(y>0):
-            Lon=np.arccos(x/np.sqrt(x**2+y**2))* 180 /np.pi * 1
+            Lon=np.degrees(np.arccos(x/np.sqrt(x**2+y**2)))
         else:
-            Lon=np.arccos(x/np.sqrt(x**2+y**2))* 180 /np.pi * (-1)
-        Lat = np.arcsin(z/np.sqrt(x**2 + y**2 + z**2)) * 180 /np.pi;
+            Lon=np.degrees(np.arccos(x/np.sqrt(x**2+y**2))) * (-1)
+        Lat = np.degrees(np.arcsin(z/np.sqrt(x**2 + y**2 + z**2)));
         A = np.sqrt(x**2 + y**2 + z**2)-1737 #Altitude
         LLA[i]=[Lon,Lat,A]
     else:
