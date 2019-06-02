@@ -29,8 +29,6 @@ for i in range(K):
         LLA[i]=[Lon,Lat,A]
     else:
         LLA[i]=[-1,-1,-1]
-#LLA
-######################################################################################## Finding Minimum Altitude
 LLA_3d=[]
 LLA_alt=[]
 LLA_minalt=[]
@@ -53,18 +51,13 @@ for num in LLA:
         LLA_alt.clear() 
         LLA_3d.clear()
 
-#LLA_minalt
-#################################################################################################### Plot
 import matplotlib.pyplot as plt
-Lon=[]
-Lat=[]
-
-for n in LLA_minalt: 
-    Lon.append(n[0])
-    Lat.append(n[1])
-
+LLB=pd.DataFrame((LLA_minalt))
+LLB.columns=["Lon","Lat","Alt"]
+Lon=LLB["Lon"]
+Lat=LLB["Lat"]
 plt.style.use('dark_background')
 plt.plot(Lon,Lat,"c.")  
 plt.title('Radio Occultation Plot')
 plt.show()
-print(len(LLA_minalt))
+LLB.head()
