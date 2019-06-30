@@ -29,6 +29,8 @@ for i in range(K):
         LLA[i]=[Lon,Lat,A]
     else:
         LLA[i]=[-1,-1,-1]
+#LLA
+######################### Find minimum value
 LLA_3d=[]
 LLA_alt=[]
 LLA_minalt=[]
@@ -50,15 +52,16 @@ for num in LLA:
         count=0
         LLA_alt.clear() 
         LLA_3d.clear()
-
+        
+LLA_minalt=np.array(LLA_minalt)
+###########################################Plot
 import matplotlib.pyplot as plt
-LLB=pd.DataFrame((LLA_minalt))
-LLB.columns=["Lon","Lat","Alt"]
-Lon=LLB["Lon"]
-Lat=LLB["Lat"]
 plt.style.use('dark_background')
-plt.plot(Lon,Lat,"c.")  
+plt.plot(LLA_minalt[:,0],LLA_minalt[:,1],"c.")
 plt.title('Radio Occultation Plot')
 plt.show()
+
 print(len(LLA_minalt))
+LLB=pd.DataFrame((LLA_minalt))
+LLB.columns=["Lon(deg)","Lat(deg)","Alt(km)"]
 LLB.head()
