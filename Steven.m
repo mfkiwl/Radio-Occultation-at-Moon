@@ -1,34 +1,48 @@
-SatA = csvread('LIONER396520.csv');    % position of LRO
-SatB = csvread('lro.csv');  % position of LIONER
-x_SatA = SatA(:,1);
-y_SatA = SatA(:,2);
-z_SatA = SatA(:,3);
-x_SatB = SatB(:,1);
-y_SatB = SatB(:,2);
-z_SatB = SatB(:,3);
-K=259200;
-LLA=zeros(K,3);
-for i=1:K
-    D = norm(cross(SatA(i,:), SatB(i,:))) / norm([x_SatB(i)-x_SatA(i),y_SatB(i)-y_SatA(i),z_SatB(i)-z_SatA(i)]);
-    if D<1737
-        LLA(i,:)=[-1,-1,-1];
-    elseif D<1837
-        a=[SatB(i,1)-SatA(i,1) SatB(i,2)-SatA(i,2) SatB(i,3)-SatA(i,3)];
-        t=-dot(SatA(i,:),a)/norm(a)^2;
-        x=SatA(i,1)+(SatB(i,1)-SatA(i,1))*t;
-        y=SatA(i,2)+(SatB(i,2)-SatA(i,2))*t;
-        z=SatA(i,3)+(SatB(i,3)-SatA(i,3))*t;
-        if y>0
-            Lon = acos(x / (x^2 + y^2)^.5) * 180 / pi * 1;
-        else
-            Lon = acos(x / (x^2 + y^2)^.5) * 180 / pi * (-1);
-        end
-        Lat = asin(z / (x^2 + y^2 + z^2)^.5) * 180 / pi;
-        A = (x^2 + y^2 + z^2)^.5 - 1737;
-        LLA(i,:) = [Lon Lat A];
+%Wei
+R = 1737.1; % km
+c = zeros(259201,3); % center of Moon
+LRO = csvread('lro.csv');    % position of LRO
+LIONER = csvread('LIONER396520.csv');  % position of LIONER
+x_LRO = LRO(:,1);
+y_LRO = LRO(:,2);
+z_LRO = LRO(:,3);
+x_LIONER = LIONER(:,1);
+y_LIONER = LIONER(:,2);
+z_LIONER = LIONER(:,3);
+a(:,1) = x_LRO - x_LIONER;
+a(:,2) = y_LRO - y_LIONER;
+a(:,3) = z_LRO - z_LIONER;
+b(:,1) = -x_LRO;
+b(:,2) = -y_LRO;
+b(:,3) = -z_LRO;
+S=size(LRO);
+for i = 1:S(1)
+
+d(i,1) = norm(cross(a(i,:), b(i,:))) / norm(a(i,:)); % distance between the center of Moon and the line linking LRO and LIONER
+
+if  d(i,1) < R
+    LLA(i,:) = [-1 -1 -1];
+    
+elseif d(i,1) < (1+100/1737.1)*R
+    t(i,1) = -(LIONER(i,:) - c(i,:)) * (a(i,:).') / (a(i,:) * a(i,:).');
+    O(i,:) = LIONER(i,:) + (LRO(i,:) - LIONER(i,:)) * t(i,1);  % Occultation points!
+    x(i) = O(i,1);
+    y(i) = O(i,2);
+    z(i) = O(i,3);
+    if  y(i) > 0
+        Lon(i) = acos(x(i) / (x(i)^2 + y(i)^2)^.5) * 180 / pi * 1;
     else
-        LLA(i,:)=[-1,-1,-1];
-    end     
+        Lon(i) = acos(x(i) / (x(i)^2 + y(i)^2)^.5) * 180 / pi * (-1);
+    end
+    Lat(i) = asin(z(i) / (x(i)^2 + y(i)^2 + z(i)^2)^.5) * 180 / pi;
+    A(i) = (x(i)^2 + y(i)^2 + z(i)^2)^.5 - R;
+    LLA(i,:) = [Lon(i) Lat(i) A(i)]; 
+else
+    LLA(i,:) = [-1 -1 -1];
 end
-csvwrite('Occ.csv',LLA);
-fprintf("Done");
+end
+csvwrite('occultation396520.csv',LLA); 
+p(i) = LLA(i,1);
+q(i) = LLA(i,2);
+plot(p,q,'k.','MarkerSize',3);
+axis([-180,180,-90,90]);
