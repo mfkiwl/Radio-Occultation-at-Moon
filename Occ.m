@@ -19,11 +19,11 @@ for i=1:K
         y=SatA(i,2)+(SatB(i,2)-SatA(i,2))*t;
         z=SatA(i,3)+(SatB(i,3)-SatA(i,3))*t;
         if y>0
-            Lon = acos(x / (x^2 + y^2)^.5) * 180 / pi * 1;
+            Lon = rad2deg(acos(x / (x^2 + y^2)^.5));
         else
-            Lon = acos(x / (x^2 + y^2)^.5) * 180 / pi * (-1);
+            Lon =  rad2deg(acos(x / (x^2 + y^2)^.5))*(-1);
         end
-        Lat = asin(z / (x^2 + y^2 + z^2)^.5) * 180 / pi;
+        Lat =  rad2deg(asin(z / (x^2 + y^2 + z^2)^.5));
         A = (x^2 + y^2 + z^2)^.5 - 1737;
         LLA(i,:) = [Lon Lat A];
     else
